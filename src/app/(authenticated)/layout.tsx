@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../_lib/auth'
+import { Header } from '@/components/Header'
 
 export default async function RootLayout({
   children
@@ -13,5 +14,10 @@ export default async function RootLayout({
     return redirect('/signin')
   }
 
-  return children
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  )
 }

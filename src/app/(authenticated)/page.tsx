@@ -1,5 +1,5 @@
-'use client'
 import { signIn } from 'next-auth/react'
+import { ChatList } from './ChatsList'
 
 export default function Home({...rest}) {
   const handleSignin = async () => {
@@ -7,12 +7,8 @@ export default function Home({...rest}) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <button
-        onClick={handleSignin}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        SignIn
-      </button>
+    <main className="flex flex-1 min-h-screen container">
+      <ChatList />
     </main>
   )
 }
