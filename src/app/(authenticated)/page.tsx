@@ -2,7 +2,6 @@
 import { signIn } from 'next-auth/react'
 
 export default function Home({...rest}) {
-  console.log('Home', rest)
   const handleSignin = async () => {
     signIn()
   }
