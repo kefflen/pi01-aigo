@@ -1,7 +1,7 @@
 'use server'
 
 import { ChatCard } from './ChatCard'
-import { loadChats } from './_actions/chat-actions'
+import { loadChats } from '../_actions/chat-actions'
 
 //TODO: Should load chat by user id
 export const ChatList = async () => {
