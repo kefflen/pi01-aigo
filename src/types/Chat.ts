@@ -5,7 +5,7 @@ export type Chat = {
   id: string
   title: string
   language: string
-  context: string
+  context: string|null
   messages: Message[]
   summary: string
 }

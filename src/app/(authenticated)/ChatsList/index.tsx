@@ -1,20 +1,23 @@
 'use client'
 
 import { Chat } from '@/types/Chat'
+import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { ChatCard } from './ChatCard'
 import { loadChats } from '../_actions/chat-services'
+import { ChatCard } from './ChatCard'
 
 export const ChatList = () => {
   const [chats, setChats] = useState<Chat[]>([])
+  const session = useSession()
 
   useEffect(() => {
-    const execute = async () => {
-      const chatsData = await loadChats()
-      setChats(chatsData)
+    if (session.data?.user) {
+      const user = session.data.user as any
+      loadChats(user.email).then((chatsData) => {
+        setChats(chatsData)
+      })
     }
-    execute()
-  }, [])
+  }, [session])
 
   return (
     <div className="py-2 px-4 w-full border-lime-500 grid gap-5 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
