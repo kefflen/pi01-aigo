@@ -1,14 +1,19 @@
 'use client'
-import { chatsMocks } from '@/mocks/ChatsMocks'
+
 import { Chat } from '@/types/Chat'
 import { useEffect, useState } from 'react'
 import { ChatCard } from './ChatCard'
+import { loadChats } from '../_actions/chat-services'
 
 export const ChatList = () => {
   const [chats, setChats] = useState<Chat[]>([])
 
   useEffect(() => {
-    setChats(chatsMocks)
+    const execute = async () => {
+      const chatsData = await loadChats()
+      setChats(chatsData)
+    }
+    execute()
   }, [])
 
   return (

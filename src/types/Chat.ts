@@ -1,6 +1,6 @@
 import { Message } from "./Message"
 
-
+//TODO: add user ID
 export type Chat = {
   id: string
   title: string
