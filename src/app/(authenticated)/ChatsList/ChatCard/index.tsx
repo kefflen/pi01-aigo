@@ -1,4 +1,3 @@
-'use server'
 
 import { cn } from '@/app/_lib/utils'
 import { Button } from '@/components/ui/button'
