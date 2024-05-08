@@ -23,8 +23,8 @@ export default function ChatPage() {
 
   const chat = chatData
   return (
-    <main className="p-5">
-      <div className="container mx-auto flex flex-col">
+    <main className="p-5 flex flex-col flex-1">
+      <div className="container mx-auto flex flex-1 flex-col">
         <div className="flex justify-between bg-slate-900 p-2 rounded-t-lg">
           <div>
             <h2 className="text-2xl font-bold">{chat.title}</h2>
@@ -41,7 +41,7 @@ export default function ChatPage() {
             ></Image>
           </div>
         </div>
-        <div className="flex flex-col h-[80vh] justify-between p-2 overflow-y-auto bg-slate-800 rounded-b-lg">
+        <div className="flex flex-1 flex-col justify-between p-2 overflow-y-auto bg-slate-800 rounded-b-lg">
           <div className="w-full flex flex-col gap-3 overflow-auto pb-5">
             {chat.messages.map((message, index) => {
               const isUser = message.author !== 'AIGO'
@@ -86,7 +86,7 @@ export default function ChatPage() {
               )
             })}
           </div>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <input
               type="text"
               className="w-full p-2 my-1 bg-slate-200 text-black rounded-lg outline-none"

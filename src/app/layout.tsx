@@ -24,7 +24,7 @@ export default function RootLayout({
         <body
           className={cn(
             inter.className,
-            'bg-slate-950 text-gray-100 w-full min-h-screen'
+            'bg-slate-950 text-gray-100 w-full min-h-screen flex flex-col'
           )}
         >
           {children}
