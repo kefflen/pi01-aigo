@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-        <body className={cn(inter.className, 'bg-slate-950 text-gray-100')}>
+        <body className={cn(inter.className, 'bg-slate-950 text-gray-100 w-full')}>
           {children}
         </body>
       </AuthProvider>
