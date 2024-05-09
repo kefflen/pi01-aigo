@@ -5,6 +5,36 @@ import { Message, Chat as PrismaChat, User } from "@prisma/client"
 import { signOut } from "next-auth/react"
 import { redirect } from "next/navigation"
 
+export const loadUserChatById = async (userEmail: string, chatId: string): Promise<Chat|never> => {
+
+  const data = await db.chat.findUnique({
+    where: {
+      id: chatId
+    },
+    include: {
+      user: true,
+      messages: {
+        include: {
+          author: true,
+        },
+        orderBy: {
+          sentWhen: 'desc'
+        }
+      }
+    }
+  })
+
+  if (!data) {
+    return redirect('/')
+  }
+
+  if (data.user.email !== userEmail) {
+    return redirect('/')
+  }
+
+  return prismaChatToChatMapper(data)
+}
+
 export const loadChats = async (userEmail: string): Promise<Chat[]|never> => {
   const user = await db.user.findUnique({
     where: {
@@ -47,5 +77,6 @@ const prismaChatToChatMapper = (prismaData: PrismaChat & {
     context: prismaData.context,
     messages: prismaData.messages.map((message) => ({...message, author: message.author?.name || 'AIGO' })),
     summary: prismaData.summary,
+    initialPrompt: prismaData.initialPrompt
   }
 }

@@ -8,4 +8,5 @@ export type Chat = {
   context: string|null
   messages: Message[]
   summary: string
+  initialPrompt: string
 }
