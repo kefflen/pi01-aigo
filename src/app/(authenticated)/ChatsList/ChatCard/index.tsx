@@ -1,5 +1,5 @@
-
 import { cn } from '@/app/_lib/utils'
+import { LinkButton } from '@/components/LinkButton'
 import { Button } from '@/components/ui/button'
 import { Chat } from '@/types/Chat'
 
@@ -7,6 +7,7 @@ type ChatCardProps = {
   chat: Chat
   className?: string
 }
+
 export const ChatCard = ({ chat, className }: ChatCardProps) => {
   return (
     <div
@@ -27,9 +28,9 @@ export const ChatCard = ({ chat, className }: ChatCardProps) => {
         </p>
       </div>
       <div className="p-2 flex gap-2 justify-end">
-        <Button
-          className='hover:bg-slate-950'
-        >Continue</Button>
+        <LinkButton href={`/chat/${chat.id}`} className="hover:bg-slate-950">
+          Continue
+        </LinkButton>
         <Button
           variant={'outline'}
           className="bg-transparent border-red-800 border-2 text-red-600 hover:bg-red-800 hover:text-white"
