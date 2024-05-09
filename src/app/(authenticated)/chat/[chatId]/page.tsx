@@ -50,7 +50,7 @@ export default function ChatPage() {
                 <div
                   key={message.id}
                   className={cn(
-                    'flex flex-col gap-1 p-2 bg-slate-900 rounded-lg self-start w-[45%]',
+                    'flex flex-col gap-1 p-2 bg-slate-900 rounded-lg self-start w-[48%]',
                     !isUser && 'bg-slate-950 self-end'
                   )}
                 >
