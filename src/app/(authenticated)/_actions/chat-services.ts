@@ -1,22 +1,19 @@
 'use server'
 import { db } from "@/app/_lib/prisma"
+import { prismaChatDataToChatMapper } from "@/mappers/prismaChatToChatMapper"
 import { Chat } from "@/types/Chat"
-import { Message, Chat as PrismaChat, User } from "@prisma/client"
 import { signOut } from "next-auth/react"
 import { redirect } from "next/navigation"
 
 export const loadUserChatById = async (userEmail: string, chatId: string): Promise<Chat|never> => {
 
-  const data = await db.chat.findUnique({
+  const chatData = await db.chat.findUnique({
     where: {
       id: chatId
     },
     include: {
       user: true,
       messages: {
-        include: {
-          author: true,
-        },
         orderBy: {
           sentWhen: 'desc'
         }
@@ -24,15 +21,24 @@ export const loadUserChatById = async (userEmail: string, chatId: string): Promi
     }
   })
 
-  if (!data) {
+  if (!chatData) {
     return redirect('/')
   }
 
-  if (data.user.email !== userEmail) {
+  if (chatData.user.email !== userEmail) {
     return redirect('/')
   }
 
-  return prismaChatToChatMapper(data)
+  const {
+    user,
+    messages,
+    ...chat
+  } = chatData
+  return prismaChatDataToChatMapper({
+    chat,
+    messages,
+    user
+  })
 }
 
 export const loadChats = async (userEmail: string): Promise<Chat[]|never> => {
@@ -47,15 +53,13 @@ export const loadChats = async (userEmail: string): Promise<Chat[]|never> => {
     return redirect("/signin")
   }
 
-  const data = await db.chat.findMany({
+  const chatData = await db.chat.findMany({
     where: {
       userId: user.id,
     },
     include: {
+      user: true,
       messages: {
-        include: {
-          author: true,
-        },
         orderBy: {
           sentWhen: 'desc'
         }
@@ -63,20 +67,23 @@ export const loadChats = async (userEmail: string): Promise<Chat[]|never> => {
     }
   })
 
-  return data.map(prismaChatToChatMapper)
-}
-
-
-const prismaChatToChatMapper = (prismaData: PrismaChat & {
-  messages: Array<Message & { author: User | null }>
-}): Chat => {
-  return {
-    id: prismaData.id,
-    title: prismaData.title,
-    language: prismaData.language,
-    context: prismaData.context,
-    messages: prismaData.messages.map((message) => ({...message, author: message.author?.name || 'AIGO' })),
-    summary: prismaData.summary,
-    initialPrompt: prismaData.initialPrompt
+  if (!chatData) {
+    throw new Error('No chat data found')
   }
+
+
+  return chatData.map(data => {
+    const {
+      user,
+      messages,
+      ...chat
+    } = data
+    return prismaChatDataToChatMapper({
+      chat,
+      messages,
+      user
+    })
+  })
 }
+
+
