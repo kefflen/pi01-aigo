@@ -53,7 +53,7 @@ export const sendMessage = async (chatId: string, message: string) => {
 
   db.message.create({
     data: {
-      content: reply?.parts || '',
+      content: reply.parts,
       chatId, authorId: prismaResponse?.user.id
     },
   })

@@ -1,7 +1,7 @@
 import { Chat } from "@/types/Chat"
 import { ChatSession as GeminiChatSession, GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai"
 
-console.log('Executed at:', new Date().toISOString())
+console.log('ChatService.ts executed at:', new Date().toISOString())
 const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 let generativeModel: undefined | GenerativeModel
 
@@ -13,18 +13,32 @@ type Message = {
 class ChatSession {
   id: string
   chatSession: GeminiChatSession
-  
+
   constructor(id: string, history: Message[], model: GenerativeModel) {
     this.id = id
+    console.log('ChatSession.constructor', id, history, model)
+
+    let userMessage: Message|undefined
+    if (history[history.length - 1].role === 'user') {
+      userMessage = history.pop()
+    }
+
     this.chatSession = model.startChat({
       history: history.map(message => ({
-        parts: message.parts as any,
+        parts: [{
+          text: message.parts
+        }],
         role: message.role
       }))
     })
+
+    if (userMessage) {
+      this.chatSession.sendMessage(userMessage.parts)
+    }
   }
 
   async sendMessage(message: string): Promise<Message> {
+    console.log('ChatSession.sendMessage', message )
     const reply = await this.chatSession.sendMessage(message)
 
     return {
@@ -57,7 +71,11 @@ class ChatService {
     }
 
     const chatSession = this.chats.get(chat.id)
-    return chatSession?.sendMessage(message)
+    if (!chatSession) {
+      throw new Error('Chat session not found')
+    }
+
+    return chatSession.sendMessage(message)
   }
 }
 

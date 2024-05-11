@@ -2,19 +2,28 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { chatsMocks } from '@/mocks/ChatsMocks'
 import { Chat } from '@/types/Chat'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { sendMessage } from '../../_actions/aigo-services'
+import { loadUserChatById } from '../../_actions/chat-services'
 
-export default function ChatPage() {
+type ChatPageProps = {
+  params: {
+    chatId: string
+  }
+}
+
+export default function ChatPage({ params: { chatId } }: ChatPageProps) {
   const [chatData, setChat] = useState<Chat | null>(null)
+  const [message, setMessage] = useState<string>('')
   const session = useSession()
-  console.log(session)
+
   useEffect(() => {
-    const chat = chatsMocks[0]
-    setChat(chat)
+    loadUserChatById(session.data?.user?.email || '', chatId).then((chat) => {
+      setChat(chat)
+    })
   }, [])
 
   if (!chatData) {
@@ -22,6 +31,45 @@ export default function ChatPage() {
   }
 
   const chat = chatData
+
+  const handleSendMessage = async () => {
+    if (!message) {
+      return
+    }
+    setChat({
+      ...chat,
+      messages: [
+        ...chat.messages,
+        {
+          content: message,
+          id: `new-message ${Date.now()}`,
+          sentWhen: new Date(),
+          author: session.data?.user?.name || 'User',
+        },
+      ],
+    })
+    const reply = await sendMessage(chatId, message)
+    setChat({
+      ...chat,
+      messages: [
+        ...chat.messages,
+        {
+          content: message,
+          id: `new-message ${Date.now()}`,
+          sentWhen: new Date(),
+          author: session.data?.user?.name || 'User',
+        },
+        {
+          content: reply.parts,
+          id: `new-message ${Date.now()}`,
+          sentWhen: new Date(),
+        },
+      ],
+    })
+
+    setMessage('')
+  }
+
   return (
     <main className="p-5 flex flex-col flex-1">
       <div className="container mx-auto flex flex-1 flex-col">
@@ -44,7 +92,7 @@ export default function ChatPage() {
         <div className="flex flex-1 flex-col justify-between p-2 overflow-y-auto bg-slate-800 rounded-b-lg">
           <div className="w-full flex flex-col gap-3 overflow-auto pb-5">
             {chat.messages.map((message, index) => {
-              const isUser = message.author !== 'AIGO'
+              const isUser = !!message.author
 
               return (
                 <div
@@ -88,11 +136,15 @@ export default function ChatPage() {
           </div>
           <div className="flex items-center gap-1">
             <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               type="text"
               className="w-full p-2 my-1 bg-slate-200 text-black rounded-lg outline-none"
               placeholder="Digite sua mensagem..."
             />
-            <Button className="h-full">Enviar</Button>
+            <Button onClick={handleSendMessage} className="h-full">
+              Enviar
+            </Button>
           </div>
         </div>
       </div>
