@@ -1,10 +1,11 @@
+import { Header } from '@/components/Header'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '../_lib/auth'
-import { Header } from '@/components/Header'
+import { AuthenticatedProvider } from './_providers/authenticatedContext'
 
 export default async function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
@@ -15,9 +16,9 @@ export default async function RootLayout({
   }
 
   return (
-    <>
+    <AuthenticatedProvider>
       <Header />
       {children}
-    </>
+    </AuthenticatedProvider>
   )
 }

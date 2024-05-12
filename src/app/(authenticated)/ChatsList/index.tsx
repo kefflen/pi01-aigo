@@ -2,12 +2,14 @@
 
 import { Chat } from '@/types/Chat'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { loadChats } from '../_actions/chat-services'
 import { ChatCard } from './ChatCard'
+import { AuthenticatedContext } from '../_providers/authenticatedContext'
 
 export const ChatList = () => {
   const [chats, setChats] = useState<Chat[]>([])
+  const authenticatedContext = useContext(AuthenticatedContext)
   const session = useSession()
 
   useEffect(() => {
