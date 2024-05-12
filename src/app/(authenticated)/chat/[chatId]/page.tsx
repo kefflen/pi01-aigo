@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Chat } from '@/types/Chat'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { sendMessage } from '../../_actions/aigo-services'
-import { loadUserChatById } from '../../_actions/chat-services'
+import { loadUserChatById } from '../../_actions/chat-actions'
+import { AuthenticatedContext } from '../../_providers/authenticatedContext'
 
 type ChatPageProps = {
   params: {
@@ -18,13 +18,13 @@ type ChatPageProps = {
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
   const [chatData, setChat] = useState<Chat | null>(null)
   const [message, setMessage] = useState<string>('')
-  const session = useSession()
+  const authenticatedContext = useContext(AuthenticatedContext)
 
   useEffect(() => {
-    loadUserChatById(session.data?.user?.email || '', chatId).then((chat) => {
+    loadUserChatById(authenticatedContext.userId, chatId).then((chat) => {
       setChat(chat)
     })
-  }, [])
+  }, [authenticatedContext.userId, chatId])
 
   if (!chatData) {
     return <div>Loading...</div>
@@ -44,7 +44,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
           content: message,
           id: `new-message ${Date.now()}`,
           sentWhen: new Date(),
-          author: session.data?.user?.name || 'User',
+          author: authenticatedContext.name,
         },
       ],
     })
@@ -57,7 +57,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
           content: message,
           id: `new-message ${Date.now()}`,
           sentWhen: new Date(),
-          author: session.data?.user?.name || 'User',
+          author: authenticatedContext.name,
         },
         {
           content: reply.parts,
@@ -111,9 +111,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
                     <Image
                       alt="Profile picture"
                       src={
-                        isUser
-                          ? 'https://lh3.googleusercontent.com/a/ACg8ocJ315SxMmCEFok1MRy_G7klYzkEs-LRtymibTu2K8vbuarqCCQW=s96-c'
-                          : '/aigo.svg'
+                        isUser ? authenticatedContext.avatarUrl : '/aigo.svg'
                       }
                       width={30}
                       height={30}

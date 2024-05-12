@@ -2,14 +2,14 @@
 import { db } from "@/app/_lib/prisma"
 import { prismaChatDataToChatMapper } from "@/mappers/prismaChatToChatMapper"
 import { Chat } from "@/types/Chat"
-import { signOut } from "next-auth/react"
 import { redirect } from "next/navigation"
 
-export const loadUserChatById = async (userEmail: string, chatId: string): Promise<Chat|never> => {
+export const loadUserChatById = async (userId: string, chatId: string): Promise<Chat|never> => {
 
   const chatData = await db.chat.findUnique({
     where: {
-      id: chatId
+      id: chatId,
+      userId
     },
     include: {
       user: true,
@@ -22,11 +22,7 @@ export const loadUserChatById = async (userEmail: string, chatId: string): Promi
   })
 
   if (!chatData) {
-    return redirect('/')
-  }
-
-  if (chatData.user.email !== userEmail) {
-    return redirect('/')
+    throw new Error('No chat data found')
   }
 
   const {
@@ -41,21 +37,11 @@ export const loadUserChatById = async (userEmail: string, chatId: string): Promi
   })
 }
 
-export const loadChats = async (userEmail: string): Promise<Chat[]|never> => {
-  const user = await db.user.findUnique({
-    where: {
-      email: userEmail,
-    },
-  })
-
-  if (!user) {
-    signOut()
-    return redirect("/signin")
-  }
+export const loadChats = async (userId: string): Promise<Chat[]|never> => {
 
   const chatData = await db.chat.findMany({
     where: {
-      userId: user.id,
+      userId,
     },
     include: {
       user: true,
