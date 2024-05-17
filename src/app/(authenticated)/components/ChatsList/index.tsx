@@ -1,9 +1,8 @@
 'use client'
 
-import { Chat } from '@/types/Chat'
-import { Suspense, useContext, useEffect, useState } from 'react'
-import { loadChats } from '../_actions/chat-actions'
-import { AuthenticatedContext } from '../_providers/authenticatedContext'
+import { Suspense, useContext } from 'react'
+import { loadChats } from '../../_actions/chat-actions'
+import { AuthenticatedContext } from '../../_providers/authenticatedContext'
 import { ChatCard } from './ChatCard'
 
 export const ChatList = () => {

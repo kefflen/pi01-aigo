@@ -2,7 +2,7 @@ import { cn } from '@/app/_lib/utils'
 import { LinkButton } from '@/components/LinkButton'
 import { Button } from '@/components/ui/button'
 import { Chat } from '@/types/Chat'
-import { deleteChat } from '../../_actions/chat-actions'
+import { deleteChat } from '../../../_actions/chat-actions'
 
 type ChatCardProps = {
   chat: Chat
