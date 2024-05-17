@@ -19,6 +19,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@radix-ui/react-select'
 import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -79,11 +86,28 @@ export default function Home({ ...rest }) {
                 control={form.control}
                 name="language"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="items-stretch">
                     <FormLabel htmlFor="title">Idioma*</FormLabel>
-                    <FormControl className="border-none bg-slate-800 text-white">
-                      <Input {...field} />
-                    </FormControl>
+                    <div className="w-full">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o idioma" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2">
+                          <SelectItem value="inglês">Inglês</SelectItem>
+                          <SelectItem value="espanhol">Espanhol</SelectItem>
+                          <SelectItem value="francês">Francês</SelectItem>
+                          <SelectItem value="italiano">Italiano</SelectItem>
+                          <SelectItem value="alemão">Alemão</SelectItem>
+                          <SelectItem value="japonês">Japonês</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -102,7 +126,10 @@ export default function Home({ ...rest }) {
                 )}
               />
             </div>
-            <Button type="submit" className="bg-slate-950 hover:bg-slate-950/50">
+            <Button
+              type="submit"
+              className="bg-slate-950 hover:bg-slate-950/50"
+            >
               Criar chat
             </Button>
           </form>
