@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Sheet,
   SheetContent,
@@ -25,7 +26,6 @@ import { z } from 'zod'
 import { ChatList } from './ChatsList'
 import { createUserChat } from './_actions/chat-actions'
 import { AuthenticatedContext } from './_providers/authenticatedContext'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const chatFormSchema = z.object({
   title: z.string().min(1, 'O título é obrigatório'),
@@ -39,6 +39,7 @@ export default function Home({ ...rest }) {
     resolver: zodResolver(chatFormSchema),
   })
   const onSubmit = form.handleSubmit((data) => {
+    console.log(data)
     createUserChat({
       language: data.language,
       title: data.title,
@@ -114,11 +115,26 @@ export default function Home({ ...rest }) {
                 control={form.control}
                 name="context"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="context">Contexto</FormLabel>
-                    <FormControl className="border-none bg-slate-800 text-white">
-                      <Input {...field} />
-                    </FormControl>
+                  <FormItem className="items-stretch">
+                    <FormLabel htmlFor="title">Contexto</FormLabel>
+                    <div className="w-full">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecionar contexto?" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2">
+                          <SelectItem value="Viagem">Travel to the country that speak the learning language</SelectItem>
+                          <SelectItem value="Atendimento de restaurante">Restaurant attendement</SelectItem>
+                          <SelectItem value="Atendimento posto de saude">Health attendement</SelectItem>
+                          <SelectItem value="Atendimento no aeroporto">Airport attendement</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

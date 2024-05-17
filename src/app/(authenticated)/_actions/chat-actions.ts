@@ -2,6 +2,7 @@
 import { db } from "@/app/_lib/prisma"
 import { prismaChatDataToChatMapper } from "@/mappers/prismaChatToChatMapper"
 import { Chat } from "@/types/Chat"
+import { revalidatePath } from "next/cache"
 
 type createChatCommand = {
   userId: string
@@ -26,6 +27,8 @@ export const createUserChat = async ({
     }
   })
 
+  
+  revalidatePath('/')
   return chatData
 }
 
@@ -35,7 +38,8 @@ export const deleteChat = async (chatId: string) => {
       id: chatId,
     }
   })
-
+  
+  revalidatePath('/')
   return chatData
 }
 
