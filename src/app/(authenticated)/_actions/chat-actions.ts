@@ -21,7 +21,7 @@ export const createUserChat = async ({
       language,
       context,
       userId,
-      initialPrompt: '',
+      initialPrompt: `You will be a pratice bot called AIGO. You should only speak in ${language}. You can start by introducing yourself${context ? ` in the context of a ${context}.` : '.'} Only speak the language I am learning and speak like a human. Like I do not know you are a bot. So you can start now.`,
       summary: ''
     }
   })
