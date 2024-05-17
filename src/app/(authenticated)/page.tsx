@@ -97,7 +97,7 @@ export default function Home({ ...rest }) {
                             <SelectValue placeholder="Selecione o idioma" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2">
+                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2 text-white">
                           <SelectItem value="inglês">Inglês</SelectItem>
                           <SelectItem value="espanhol">Espanhol</SelectItem>
                           <SelectItem value="francês">Francês</SelectItem>
@@ -127,7 +127,7 @@ export default function Home({ ...rest }) {
                             <SelectValue placeholder="Selecionar contexto?" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2">
+                        <SelectContent className="bg-slate-800 rounded-md py-1 px-2 text-white">
                           <SelectItem value="Viagem">Travel to the country that speak the learning language</SelectItem>
                           <SelectItem value="Atendimento de restaurante">Restaurant attendement</SelectItem>
                           <SelectItem value="Atendimento posto de saude">Health attendement</SelectItem>

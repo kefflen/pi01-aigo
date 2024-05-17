@@ -1,20 +1,22 @@
 'use client'
 
 import { Chat } from '@/types/Chat'
-import { useContext, useEffect, useState } from 'react'
+import { Suspense, useContext, useEffect, useState } from 'react'
 import { loadChats } from '../_actions/chat-actions'
 import { AuthenticatedContext } from '../_providers/authenticatedContext'
 import { ChatCard } from './ChatCard'
 
 export const ChatList = () => {
-  const [chats, setChats] = useState<Chat[]>([])
-  const authenticatedContext = useContext(AuthenticatedContext)
+  return (
+    <Suspense fallback={'Loading...'}>
+      <ChatListLoaded />
+    </Suspense>
+  )
+}
 
-  useEffect(() => {
-    loadChats(authenticatedContext.userId).then((chatsData) => {
-      setChats(chatsData)
-    })
-  }, [authenticatedContext.userId])
+const ChatListLoaded = async () => {
+  const authenticatedContext = useContext(AuthenticatedContext)
+  const chats = await loadChats(authenticatedContext.userId)
 
   return (
     <div className="py-2 px-4 w-full border-lime-500 grid gap-5 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
