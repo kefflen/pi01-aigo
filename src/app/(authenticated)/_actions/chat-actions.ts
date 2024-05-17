@@ -29,11 +29,10 @@ export const createUserChat = async ({
   return chatData
 }
 
-export const deleteChatCommand = async (userId: string, chatId: string) => {
+export const deleteChat = async (chatId: string) => {
   const chatData = await db.chat.delete({
     where: {
       id: chatId,
-      userId
     }
   })
 

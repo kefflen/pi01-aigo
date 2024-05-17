@@ -2,6 +2,7 @@ import { cn } from '@/app/_lib/utils'
 import { LinkButton } from '@/components/LinkButton'
 import { Button } from '@/components/ui/button'
 import { Chat } from '@/types/Chat'
+import { deleteChat } from '../../_actions/chat-actions'
 
 type ChatCardProps = {
   chat: Chat
@@ -9,6 +10,10 @@ type ChatCardProps = {
 }
 
 export const ChatCard = ({ chat, className }: ChatCardProps) => {
+  const handleRemoveButton = () => {
+    deleteChat(chat.id)
+  }
+
   return (
     <div
       className={cn('bg-slate-800 h-fit rounded-lg overflow-hidden', className)}
@@ -32,6 +37,7 @@ export const ChatCard = ({ chat, className }: ChatCardProps) => {
           Continue
         </LinkButton>
         <Button
+          onClick={handleRemoveButton}
           variant={'outline'}
           className="bg-transparent border-red-800 border-2 text-red-600 hover:bg-red-800 hover:text-white"
         >
