@@ -39,7 +39,6 @@ export default function Home({ ...rest }) {
     resolver: zodResolver(chatFormSchema),
   })
   const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
     createUserChat({
       language: data.language,
       title: data.title,
@@ -92,7 +91,7 @@ export default function Home({ ...rest }) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1">
+                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1 border-slate-700">
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione o idioma" />
                           </SelectTrigger>
@@ -122,7 +121,7 @@ export default function Home({ ...rest }) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1">
+                        <FormControl className="bg-slate-800 text-start rounded-md h-9 px-3 py-1 text-sm w-full mb-1 border-slate-700">
                           <SelectTrigger>
                             <SelectValue placeholder="Selecionar contexto?" />
                           </SelectTrigger>
