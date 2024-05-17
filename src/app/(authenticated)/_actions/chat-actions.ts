@@ -2,7 +2,43 @@
 import { db } from "@/app/_lib/prisma"
 import { prismaChatDataToChatMapper } from "@/mappers/prismaChatToChatMapper"
 import { Chat } from "@/types/Chat"
-import { redirect } from "next/navigation"
+
+type createChatCommand = {
+  userId: string
+  title: string
+  language: string
+  context?: string
+}
+export const createUserChat = async ({
+  userId,
+  title,
+  language,
+  context
+}: createChatCommand) => {
+  const chatData = await db.chat.create({
+    data: {
+      title,
+      language,
+      context,
+      userId,
+      initialPrompt: '',
+      summary: ''
+    }
+  })
+
+  return chatData
+}
+
+export const deleteChatCommand = async (userId: string, chatId: string) => {
+  const chatData = await db.chat.delete({
+    where: {
+      id: chatId,
+      userId
+    }
+  })
+
+  return chatData
+}
 
 export const loadUserChatById = async (userId: string, chatId: string): Promise<Chat|never> => {
 

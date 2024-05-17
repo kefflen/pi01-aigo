@@ -19,17 +19,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@radix-ui/react-select'
-import { signIn } from 'next-auth/react'
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { ChatList } from './ChatsList'
+import { createUserChat } from './_actions/chat-actions'
+import { AuthenticatedContext } from './_providers/authenticatedContext'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const chatFormSchema = z.object({
   title: z.string().min(1, 'O título é obrigatório'),
@@ -38,16 +34,18 @@ const chatFormSchema = z.object({
 })
 
 export default function Home({ ...rest }) {
+  const { userId } = useContext(AuthenticatedContext)
   const form = useForm<z.infer<typeof chatFormSchema>>({
     resolver: zodResolver(chatFormSchema),
   })
   const onSubmit = form.handleSubmit((data) => {
-    console.log({ data })
+    createUserChat({
+      language: data.language,
+      title: data.title,
+      context: data.context,
+      userId,
+    })
   })
-
-  const handleSignin = async () => {
-    signIn()
-  }
 
   return (
     <Sheet>
