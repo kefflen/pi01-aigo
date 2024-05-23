@@ -2,11 +2,12 @@
 import { db } from '@/app/_lib/prisma'
 import { prismaChatDataToChatMapper } from '@/mappers/prismaChatToChatMapper'
 import { chatService } from '@/services/ChatService'
+import { Message } from '@/types/Message'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 
-export const sendMessage = async (chatId: string, message: string) => {
+export const sendMessage = async (chatId: string, message: Message): Promise<Message> => {
   
   const prismaResponse = await db.chat.findUnique({
     where: {
@@ -42,19 +43,20 @@ export const sendMessage = async (chatId: string, message: string) => {
   })
   
 
-  const reply = await chatService.sendMessageToChat(chat, message)
+  const reply = await chatService.sendMessageToChat(chat, message.content)
 
   db.message.create({
     data: {
-      content: message,
-      chatId, authorId: prismaResponse?.user.id
+      content: message.content,
+      id: message.id,
+      chatId, authorId: prismaResponse?.user.id, sentWhen: message.sentWhen
     },
   })
 
   db.message.create({
     data: {
-      content: reply.parts,
-      chatId, authorId: prismaResponse?.user.id
+      content: reply.content,
+      chatId, id: reply.id, sentWhen: reply.sentWhen
     },
   })
 

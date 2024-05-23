@@ -1,13 +1,13 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Chat } from '@/types/Chat'
+import { Message } from '@/types/Message'
 import Image from 'next/image'
 import { useContext, useEffect, useState } from 'react'
-import { sendMessage } from '../../_actions/aigo-services'
 import { loadUserChatById } from '../../_actions/chat-actions'
 import { AuthenticatedContext } from '../../_providers/authenticatedContext'
+import { ChatInput } from './components/ChatInput'
 
 type ChatPageProps = {
   params: {
@@ -16,58 +16,28 @@ type ChatPageProps = {
 }
 
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
-  const [chatData, setChat] = useState<Chat | null>(null)
-  const [message, setMessage] = useState<string>('')
-  const authenticatedContext = useContext(AuthenticatedContext)
+  const { userId, avatarUrl, name } = useContext(AuthenticatedContext)
+  const [chat, setChat] = useState<null | Chat>(null)
 
   useEffect(() => {
-    loadUserChatById(authenticatedContext.userId, chatId).then((chat) => {
-      setChat(chat)
-    })
-  }, [authenticatedContext.userId, chatId])
+    loadUserChatById(userId, chatId).then((chat) => setChat(chat))
+  }, [chatId, userId])
 
-  if (!chatData) {
+  if (!chat) {
     return <div>Loading...</div>
   }
 
-  const chat = chatData
+  const addMessage = (message: Message) => {
+    setChat((prevChat) => {
+      if (!prevChat) {
+        return prevChat
+      }
 
-  const handleSendMessage = async () => {
-    if (!message) {
-      return
-    }
-    setChat({
-      ...chat,
-      messages: [
-        ...chat.messages,
-        {
-          content: message,
-          id: `new-message ${Date.now()}`,
-          sentWhen: new Date(),
-          author: authenticatedContext.name,
-        },
-      ],
+      return {
+        ...prevChat,
+        messages: [...prevChat.messages, message],
+      }
     })
-    const reply = await sendMessage(chatId, message)
-    setChat({
-      ...chat,
-      messages: [
-        ...chat.messages,
-        {
-          content: message,
-          id: `new-message ${Date.now()}`,
-          sentWhen: new Date(),
-          author: authenticatedContext.name,
-        },
-        {
-          content: reply.parts,
-          id: `new-message ${Date.now()}`,
-          sentWhen: new Date(),
-        },
-      ],
-    })
-
-    setMessage('')
   }
 
   return (
@@ -99,31 +69,29 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
                   key={message.id}
                   className={cn(
                     'flex flex-col gap-1 p-2 bg-slate-900 rounded-lg self-start w-[48%]',
-                    !isUser && 'bg-slate-950 self-end'
+                    isUser && 'bg-slate-950 self-end'
                   )}
                 >
                   <div
                     className={cn(
                       'font-semibold text-lg flex gap-1',
-                      isUser ? 'text-left' : 'text-right flex-row-reverse'
+                      isUser ? 'text-right flex-row-reverse' : 'text-left'
                     )}
                   >
                     <Image
                       alt="Profile picture"
-                      src={
-                        isUser ? authenticatedContext.avatarUrl : '/aigo.svg'
-                      }
+                      src={isUser ? avatarUrl : '/aigo.svg'}
                       width={30}
                       height={30}
                       className="rounded-full bg-white p-1/2"
                     />
-                    {message.author}
+                    {message.author ? name : 'AIGO'}
                   </div>
 
                   <p
                     className={cn(
-                      'opacity-70 text-sm',
-                      isUser ? 'text-left' : 'text-right'
+                      'opacity-70 text-sm p-2',
+                      isUser ? 'text-right' : 'text-left'
                     )}
                   >
                     {message.content}
@@ -132,18 +100,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
               )
             })}
           </div>
-          <div className="flex items-center gap-1">
-            <input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              type="text"
-              className="w-full p-2 my-1 bg-slate-200 text-black rounded-lg outline-none"
-              placeholder="Digite sua mensagem..."
-            />
-            <Button onClick={handleSendMessage} className="h-full">
-              Enviar
-            </Button>
-          </div>
+          <ChatInput chatId={chatId} addMessage={addMessage} />
         </div>
       </div>
     </main>

@@ -1,11 +1,13 @@
 import { Chat } from "@/types/Chat"
+import { Message } from "@/types/Message"
 import { ChatSession as GeminiChatSession, GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai"
+import { v4 } from "uuid"
 
 console.log('ChatService.ts executed at:', new Date().toISOString())
 const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 let generativeModel: undefined | GenerativeModel
 
-type Message = {
+type geminiMessage = {
   role: 'user' | 'model',
   parts: string
 }
@@ -14,11 +16,10 @@ class ChatSession {
   id: string
   chatSession: GeminiChatSession
 
-  constructor(id: string, history: Message[], model: GenerativeModel) {
+  constructor(id: string, history: geminiMessage[], model: GenerativeModel) {
     this.id = id
-    console.log('ChatSession.constructor', id, history, model)
 
-    let userMessage: Message|undefined
+    let userMessage: geminiMessage|undefined
     if (history[history.length - 1].role === 'user') {
       userMessage = history.pop()
     }
@@ -37,8 +38,7 @@ class ChatSession {
     }
   }
 
-  async sendMessage(message: string): Promise<Message> {
-    console.log('ChatSession.sendMessage', message )
+  async sendMessage(message: string): Promise<geminiMessage> {
     const reply = await this.chatSession.sendMessage(message)
 
     return {
@@ -59,7 +59,7 @@ class ChatService {
     if (!this.chats.has(chat.id)) {
 
 
-      const history: Message[] = chat.messages.map(message => ({
+      const history: geminiMessage[] = chat.messages.map(message => ({
         role: message.author ? 'user' : 'model',
         parts: message.content
       }))
@@ -75,7 +75,15 @@ class ChatService {
       throw new Error('Chat session not found')
     }
 
-    return chatSession.sendMessage(message)
+    const response = await chatSession.sendMessage(message)
+    const result: Message = {
+      content: response.parts,
+      id: v4(),
+      sentWhen: new Date(),
+      author: null
+    }
+    
+    return result
   }
 }
 
