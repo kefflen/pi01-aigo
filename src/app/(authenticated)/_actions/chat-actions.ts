@@ -22,7 +22,7 @@ export const createUserChat = async ({
       language,
       context,
       userId,
-      initialPrompt: `You will be a pratice bot called AIGO. You should only speak in ${language}. You can start by introducing yourself${context ? ` in the context of a ${context}.` : '.'} Only speak the language I am learning and speak like a human. Like I do not know you are a bot. So you can start now.`,
+      initialPrompt: `You will be a pratice bot called AIGO. You should only speak in ${language}. You can start by introducing yourself${context ? ` in the context of a ${context}.` : '.'} Only speak the language I am learning and speak like a human. Like I do not know you are a bot. As any hypothesis, you can speak as a model or a AI. You should speak as huamn as possible. Never break the fourth wall and never escape the character and context. So you can start now.`,
       summary: ''
     }
   })
@@ -54,7 +54,7 @@ export const loadUserChatById = async (userId: string, chatId: string): Promise<
       user: true,
       messages: {
         orderBy: {
-          sentWhen: 'desc'
+          sentWhen: 'asc'
         }
       }
     }

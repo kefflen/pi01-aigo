@@ -45,7 +45,7 @@ export const sendMessage = async (chatId: string, message: Message): Promise<Mes
 
   const reply = await chatService.sendMessageToChat(chat, message.content)
 
-  db.message.create({
+  await db.message.create({
     data: {
       content: message.content,
       id: message.id,
@@ -53,7 +53,7 @@ export const sendMessage = async (chatId: string, message: Message): Promise<Mes
     },
   })
 
-  db.message.create({
+  await db.message.create({
     data: {
       content: reply.content,
       chatId, id: reply.id, sentWhen: reply.sentWhen
