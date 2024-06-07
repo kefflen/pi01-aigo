@@ -4,7 +4,7 @@ import { sendMessage } from '@/app/(authenticated)/_actions/aigo-services'
 import { AuthenticatedContext } from '@/app/(authenticated)/_providers/authenticatedContext'
 import { Button } from '@/components/ui/button'
 import { Message } from '@/types/Message'
-import { useContext, useState } from 'react'
+import { useContext, useState, useTransition } from 'react'
 
 type ChatInputProps = {
   chatId: string
@@ -13,6 +13,7 @@ type ChatInputProps = {
 
 export const ChatInput = ({ chatId, addMessage }: ChatInputProps) => {
   const { userId } = useContext(AuthenticatedContext)
+  const [isPending, startTransition] = useTransition()
   const [message, setMessage] = useState<string>('')
   
   const handleSendMessage = async () => {
@@ -22,11 +23,12 @@ export const ChatInput = ({ chatId, addMessage }: ChatInputProps) => {
       id: v4(),
       author: userId
     }
-    
     addMessage(addedMessage)
-    const response = await sendMessage(chatId, addedMessage)
-    setMessage('')
-    addMessage(response)
+    startTransition(async () => {
+      const response = await sendMessage(chatId, addedMessage)
+      setMessage('')
+      addMessage(response)
+    })
   }
 
   return (
@@ -44,7 +46,7 @@ export const ChatInput = ({ chatId, addMessage }: ChatInputProps) => {
         className="w-full p-2 my-1 bg-slate-200 text-black rounded-lg outline-none"
         placeholder="Digite sua mensagem..."
       />
-      <Button type="submit" className="h-full">
+      <Button type="submit" className="h-full" disabled={isPending}>
         Enviar
       </Button>
     </form>

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useContext } from 'react'
+import { useContext, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { AuthenticatedContext } from '../_providers/authenticatedContext'
 import { createUserChat } from '../_actions/chat-actions'
@@ -32,15 +32,19 @@ const chatFormSchema = z.object({
 
 export const NewChatForm = () => {
   const { userId } = useContext(AuthenticatedContext)
+  const [isPending, startTransition] = useTransition()
+
   const form = useForm<z.infer<typeof chatFormSchema>>({
     resolver: zodResolver(chatFormSchema),
   })
   const onSubmit = form.handleSubmit((data) => {
-    createUserChat({
-      language: data.language,
-      title: data.title,
-      context: data.context,
-      userId,
+    startTransition(async() => {
+      await createUserChat({
+        language: data.language,
+        title: data.title,
+        context: data.context,
+        userId,
+      })
     })
   })
 
@@ -128,7 +132,7 @@ export const NewChatForm = () => {
             )}
           />
         </div>
-        <Button type="submit" className="bg-slate-950 hover:bg-slate-950/50">
+        <Button type="submit" className="bg-slate-950 hover:bg-slate-950/50" disabled={isPending}>
           Criar chat
         </Button>
       </form>
