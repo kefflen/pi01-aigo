@@ -12,7 +12,7 @@ import {
 import { ChatList } from './components/ChatsList'
 import { NewChatForm } from './components/NewChatForm'
 
-export default function Home({ ...rest }) {
+export default function Home() {
   return (
     <Sheet>
       <main className="flex flex-col flex-1 min-h-screen w-full">
