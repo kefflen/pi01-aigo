@@ -1,5 +1,6 @@
 import { db } from '@/app/_lib/prisma'
 import { PrismaAdapter } from '@auth/prisma-adapter'
+import { error } from 'console'
 import { AuthOptions } from 'next-auth'
 import { Adapter } from 'next-auth/adapters'
 import GoogleProvider from 'next-auth/providers/google'
@@ -12,6 +13,18 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
     })
   ],
+  callbacks: {
+
+    signIn: async ({ user }) => {
+      console.log('user', user)
+      //@ts-ignore
+      if (user.error) {
+        //@ts-ignore
+        return `/signin?error=${user.error}}`
+      }
+      return true
+    }
+  }
   // callbacks: {
   //   async session({ session, user }) {
   //     session.user = { ...session.user, id: user.id }
